@@ -15,7 +15,7 @@
 # AUTHOR
 # Marko Luther, 2023
 
-from bottle import default_app, request, abort, route, template, static_file, get, TEMPLATE_PATH # type: ignore
+from bottle import default_app, request, abort, route, template, static_file, get, TEMPLATE_PATH, put, response # type: ignore
 from gevent import Timeout, kill # type: ignore
 
 # what is the exact difference between the next too?
@@ -56,6 +56,7 @@ etbackground='#CCCCCC'
 showet = True
 showbt = True
 static_path = ''
+emissions = {}
 
 # pickle hack:
 def work(p,rp,nonesym,timec,timebg,btc,btbg,etc,etbg,showetflag,showbtflag):
@@ -202,6 +203,16 @@ def handle_websocket():
 def status():
     return '1'
 
+@get('/emissions')
+def emissionPublish():
+    return emissions
+
+@put('/emissions')
+def updateEmissions():
+    data = request.json
+    emissions.update(data)
+    return emissions
+
 # route to serve the static page
 @route('/artisan')
 def index():
@@ -223,7 +234,6 @@ def index():
 
 
 # Static Routes
-
 @get(r'/<filename:re:.*\.js>')
 def javascripts(filename):
     return static_file(filename, root=static_path)

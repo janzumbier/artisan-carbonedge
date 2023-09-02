@@ -32,6 +32,7 @@ import warnings
 import numpy
 import logging
 import re
+import requests
 from bisect import bisect_right
 import psutil
 from psutil._common import bytes2human
@@ -14344,6 +14345,11 @@ class tgraphcanvas(FigureCanvas):
             energymetrics['BTU_ELEC'] = btu_elec
             energymetrics['KWH_batch_per_green_kg'] = kwh_batch_per_green_kg
             energymetrics['KWH_roast_per_green_kg'] = kwh_roast_per_green_kg
+
+            url = "http://127.0.0.1:8080/emissions"
+            headers = {"Content-Type": "application/json; charset=utf-8"}
+            preq = requests.put(url, headers=headers, json=energymetrics)
+            _log.info(preqq)
 
         except Exception as ex: # pylint: disable=broad-except
             _log.exception(ex)
