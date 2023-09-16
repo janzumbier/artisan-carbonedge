@@ -4409,7 +4409,6 @@ class tgraphcanvas(FigureCanvas):
                     if self.autoDropIdx > 0 and self.timeindex[0] > -1 and not self.timeindex[6]:
                         self.markDrop() # we do not reset the autoDropIdx here to avoid another trigger
                         self.autoDropIdx = -1 # we set the autoDropIdx to a negative value to prevent further triggers after undo markDROP
-
                     ##### updated canvas
                     try:
                         if not self.block_update:
@@ -11979,6 +11978,7 @@ class tgraphcanvas(FigureCanvas):
             if self.timeindex[6] == 0 and self.timeindex[0] != -1 and (self.autoDropFlag or not self.buttonvisibility[6]):
                 start = self.timex[self.timeindex[0]]
                 if (len(self.timex)>0 and self.timex[-1] - start) > 7*60: # only after 7min into the roast
+                    _log.info("Das ist die Stelle")
                     self.markDrop()
             self.aw.enableSaveActions()
             self.aw.resetCurveVisibilities()
@@ -12854,6 +12854,7 @@ class tgraphcanvas(FigureCanvas):
     # if noaction is True, the button event action is not triggered
     @pyqtSlot(bool)
     def markDrop(self, noaction:bool = False) -> None:
+        _log.info("markDrop (canvas.py Zeille 12859) ausgeführt!")
         if len(self.timex) > 1:
             removed = False
             try:
@@ -13033,6 +13034,7 @@ class tgraphcanvas(FigureCanvas):
                     self.aw.onMarkMoveToNext(self.aw.buttonDROP)
                 except Exception as e: # pylint: disable=broad-except
                     _log.exception(e)
+        self.calcEnergyuse('20')
 
     # if noaction is True, the button event action is not triggered
     @pyqtSlot(bool)
@@ -14093,6 +14095,7 @@ class tgraphcanvas(FigureCanvas):
         try:
             if len(self.timex) == 0:
                 #self.aw.sendmessage(QApplication.translate("Message","No profile data"),append=False)
+                _log.info("Ausgeführt 1")
                 return energymetrics, btu_list
 
             # helping function
@@ -14126,8 +14129,10 @@ class tgraphcanvas(FigureCanvas):
                 # iterate specialevents in reverse from DROP to the first event
                 for j in range(len(self.specialevents) - 1, -1, -1):
                     if self.load_etypes[i] != 0 and self.specialeventstype[j] == self.load_etypes[i]-1:
+                        _log.info("In clause")
                         # skip if loadrating is zero
                         if self.loadratings[i] == 0:
+                            _log.info("Laudrate 0")
                             break
                         loadtime = self.timex[self.specialevents[j]]
                         # exclude heat before charge event
@@ -14163,7 +14168,7 @@ class tgraphcanvas(FigureCanvas):
                                 CO2g = CO2g * (1 - self.electricEnergyMix/100)
                             btu_list.append({'load_pct':load_pct,'duration':duration,'BTUs':BTUs,'CO2g':CO2g,'LoadLabel':loadlabel,'Kind':kind,'SourceType':self.sourcetypes[i],'SortOrder':sortorder})
                 ### end of loop: for j in range(len(self.specialevents) - 1, -1, -1)
-
+                _log.info(btu_list)
                 # calculate Continuous event type
                 if self.load_etypes[i] == 0:
                     if self.timeindex[0] > -1 and self.timeindex[6] > 0:
@@ -14349,7 +14354,7 @@ class tgraphcanvas(FigureCanvas):
             url = "http://127.0.0.1:8080/emissions"
             headers = {"Content-Type": "application/json; charset=utf-8"}
             preq = requests.put(url, headers=headers, json=energymetrics)
-            _log.info(preqq)
+            _log.info(preq)
 
         except Exception as ex: # pylint: disable=broad-except
             _log.exception(ex)
